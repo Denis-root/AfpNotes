@@ -1,0 +1,46 @@
+{
+    "query": "query getStories (\n                  $maxRows: Int,\n                  $cursor: String,\n                  $criteria: String,\n                  $searchLanguage: String!,\n                  $dateRange: DateRangeInput,\n                  $userResearch: Boolean,\n                  $getSelections: Boolean,\n                  $sortOrder:String, $includedSub:Boolean, $language:[String!], $theme:[String!], $location:[String!], $country:[String!], $person:[String!], $textType:[String!], $wordCount:[String!], $provider:[String!]\n                )\n{\n  search:stories( maxRows: $maxRows,\n                  cursor: $cursor,\n                  criteria: $criteria,\n                  searchLanguage: $searchLanguage,\n                  dateRange: $dateRange,\n                  wantedLanguages:$language,\n                  userResearch: $userResearch,\n                  getSelections: $getSelections,\n                   sortOrder:$sortOrder, includedSub:$includedSub, language:$language, theme:$theme, location:$location, country:$country, person:$person, textType:$textType, wordCount:$wordCount, provider:$provider\n                )\n  {\n    docs {\n      \n    \n   id\n   type\n   title\n   selections\n\n    country: countryname\n    city\n    guid\n    contentCreated\n    introduced\n    dateToDisplay\n    source\n    notIncludedInSubscription\n    genre\n    isUrgent\n    isAlert\n    isFlash\n    isPressRelease\n    wordCount\n    slug\n    publicationDayWithUserTimezone: dayOfDateTodisplay (timezoneOffset:-360)\n    cost\n    provider_name\n    contributor\n    lang\n    partner {\n      gcp {\n        providername\n        provider_code\n      }\n    }\n\n    }\n    nextCursor\n    hasMore\n    numFound\n  }\n\n}",
+    "variables": {
+        "timezoneOffset": -360,
+        "maxRows": 40,
+        "searchLanguage": "es",
+        "language": [
+            "es"
+        ],
+        "theme": [
+            "economy",
+            "entertainment",
+            "general",
+            "planet",
+            "science",
+            "society",
+            "sport"
+        ],
+        "getFacet": false,
+        "userResearch": false,
+        "getSelections": true
+    },
+    "operationName": "getStories"
+}
+
+
+
+{
+    "query": "query getStories (\n                  $maxRows: Int,\n                  $cursor: String,\n                  $criteria: String,\n                  $searchLanguage: String!,\n                  $dateRange: DateRangeInput,\n                  $userResearch: Boolean,\n                  $getSelections: Boolean,\n                  $sortOrder:String, $includedSub:Boolean, $language:[String!], $theme:[String!], $location:[String!], $country:[String!], $person:[String!], $textType:[String!], $wordCount:[String!], $provider:[String!]\n                )\n{\n  search:stories( maxRows: $maxRows,\n                  cursor: $cursor,\n                  criteria: $criteria,\n                  searchLanguage: $searchLanguage,\n                  dateRange: $dateRange,\n                  wantedLanguages:$language,\n                  userResearch: $userResearch,\n                  getSelections: $getSelections,\n                   sortOrder:$sortOrder, includedSub:$includedSub, language:$language, theme:$theme, location:$location, country:$country, person:$person, textType:$textType, wordCount:$wordCount, provider:$provider\n                )\n  {\n    docs {\n      \n    \n   id\n   type\n   title\n   selections\n\n    country: countryname\n    city\n    guid\n    contentCreated\n    introduced\n    dateToDisplay\n    source\n    notIncludedInSubscription\n    genre\n    isUrgent\n    isAlert\n    isFlash\n    isPressRelease\n    wordCount\n    slug\n    publicationDayWithUserTimezone: dayOfDateTodisplay (timezoneOffset:-360)\n    cost\n    provider_name\n    contributor\n    lang\n    partner {\n      gcp {\n        providername\n        provider_code\n      }\n    }\n\n    }\n    nextCursor\n    hasMore\n    numFound\n  }\n\n}",
+    "variables": {
+        "timezoneOffset": -360,
+        "maxRows": 40,
+        "cursor": "BEFORE 2025-01-08T18:52:27.000Z 2025-01-08T18:52:30Z",
+        "searchLanguage": "es",
+        "language": [
+            "es"
+        ],
+        "theme": [
+            "sport"
+        ],
+        "getFacet": false,
+        "userResearch": false,
+        "getSelections": true
+    },
+    "operationName": "getStories"
+}
