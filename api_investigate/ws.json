@@ -1,0 +1,175 @@
+//Esta es la unica del cliente al server
+//A esta url
+1	https://wss-api-news.app.afp.com/	To server	false	60		true	1736642605936	8080	1
++
++
+
+
+
+
+{"message":"register","token":"w4xRQowhXMX8ekzPUo7lziLOWIk"}
+
+
+
+//Todas estas son del server al cliente 
+{
+    "type": "new-document",
+    "document": {
+        "id": "newsml.afp.com.20250111T000000Z.PH-GTY-2192864534",
+        "published": "2025-01-12T00:45:27Z",
+        "language": "en",
+        "theme": [
+            "general",
+            "planet"
+        ],
+        "location": [
+            "NAM",
+            "206"
+        ],
+        "provider": [],
+        "topshot": false,
+        "videoFormat": [],
+        "textType": [],
+        "wordCount": [
+            "less200"
+        ],
+        "videoDuration": [],
+        "packageFormat": "ready_to_publish",
+        "videoCollection": [],
+        "topvideo": false,
+        "type": "photo",
+        "albumId": "powerful-us-winds|2025-01-12T00:00:00.000Z"
+    }
+}
+
+
+
+{
+    "type": "new-document",
+    "document": {
+        "id": "newsml.afp.com.20250112T004728Z.doc-36tj9l2",
+        "published": "2025-01-12T00:47:28Z",
+        "language": "fr",
+        "theme": [
+            "general",
+            "planet",
+            "science"
+        ],
+        "location": [
+            "NAM",
+            "206"
+        ],
+        "provider": [
+            "afp"
+        ],
+        "topshot": false,
+        "videoFormat": [],
+        "textType": [],
+        "wordCount": [
+            "between200and500"
+        ],
+        "videoDuration": [],
+        "packageFormat": "ready_to_publish",
+        "videoCollection": [],
+        "topvideo": false,
+        "type": "news",
+        "albumId": "incendie-santé-usa|2025-01-12T00:00:00.000Z"
+    }
+}
+
+
+{
+    "type": "new-document",
+    "document": {
+        "id": "newsml.afp.com.20250111T224111Z.doc-36tg2vf",
+        "published": "2025-01-12T00:47:37Z",
+        "language": "pt",
+        "theme": [
+            "general",
+            "economy"
+        ],
+        "location": [
+            "SAM",
+            "29"
+        ],
+        "provider": [
+            "afp"
+        ],
+        "topshot": false,
+        "videoFormat": [],
+        "textType": [],
+        "wordCount": [
+            "between200and500"
+        ],
+        "videoDuration": [],
+        "packageFormat": "ready_to_publish",
+        "videoCollection": [],
+        "topvideo": false,
+        "type": "news",
+        "albumId": "agricultura-brasil-homicídio|2025-01-12T00:00:00.000Z"
+    }
+}
+
+
+
+{
+    "type": "buy-completed",
+    "response": {
+        "clientId": "DNUMLETID2_AFPNEWS_2024",
+        "clientVersion": 2599,
+        "documentType": "photo",
+        "guid": "http://doc.afp.com/36RA483",
+        "login": "acruz@elmundo.com.sv",
+        "stackVersion": "1-5-0",
+        "transactionDate": "2025-01-12T00:52:17.675Z",
+        "type": "VALIDATING_ORDER",
+        "uno": "newsml.afp.com.20241222T160244Z.doc-36ra483",
+        "data": {
+            "informations": {
+                "clientID": "DNUMLETID2_AFPNEWS_2024",
+                "role": "highdef",
+                "cost": "3",
+                "serial": "/medias/picture/photos/120/42/77/156/36RA483-highres.jpg",
+                "userID": "acruz@elmundo.com.sv",
+                "queryID": "08f1c0cb5e509142"
+            },
+            "href": "https://afp-apicore-prod.afp.com/objects/api/medias?id=a1kkIS0nShZdX1sxTF9RGkJYQkxZNm0cCwIbdQVqB3RqAwQGawd3FwVyAQoAXlEiUV9RRhxaXV8JJitJBHZ6FHoJdRcMdgNvBXIRCwERamYfBgpxH1hdUQ9RTkpDP2cfDAYEJFsoRS0hXR9TK1lvNjJgTFdCC1YgTl5ZWRxRS0gYJi1AFwAEcwN0AnF3ZgAGdAZ1cR5oXVZOGwtzS0wADQEWXFFSeHIVXwNXcVQnBSZwAggBcAZnNysqXARFX18tXUhSE1dIXVFEIDEQCAUHdwB3CXZ2AwEHfBI1LCkjSk1MW0h4CBoHAQoIHgsBcHIdCRRHNVIiUS0qD0VCMVFnJjB7Ch9fUgV0H1hACAM%3D.jpg",
+            "clientVersion": 2598
+        },
+        "roleBought": "picture-HighDef-Photo-rnd:highRes",
+        "validateOrderId": "DNUMLETID2_AFPNEWS_2024---NEWS---2599",
+        "requestId": "1163810185867",
+        "isAccessible": true,
+        "cost": 3,
+        "mediaKeys": [
+            "picture-HighDef-Photo-rnd:highRes"
+        ]
+    }
+}
+
+{
+    "type": "new-document",
+    "document": {
+        "id": "newsml.afp.com.20250111T194852Z.partners-048-PS_972996",
+        "published": "2025-01-12T00:59:19Z",
+        "language": "es",
+        "theme": [
+            "sport"
+        ],
+        "location": [],
+        "provider": [],
+        "topshot": false,
+        "videoFormat": [],
+        "textType": [],
+        "wordCount": [
+            "less200"
+        ],
+        "videoDuration": [],
+        "packageFormat": "ready_to_publish",
+        "videoCollection": [],
+        "topvideo": false,
+        "type": "photo",
+        "albumId": "copa betano 2025-universidad de chile vs godoy cruz|2025-01-12T00:00:00.000Z"
+    }
+}
+

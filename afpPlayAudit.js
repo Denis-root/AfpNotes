@@ -1,8 +1,13 @@
+/*
+Auditar la manera en que recibe las nuevas noticias
+*/
+
 const { chromium } = require('playwright-chromium');
 const fs = require('fs'); // Para guardar archivos
 const path = require('path'); // Para manejar rutas de archivos
 const axios = require('axios');
-
+const { v4: uuidv4 } = require('uuid');
+const timteTools = require('./tools/timeTools');
 
 console.log(`
     @@@@@@@@   @@@@@@   @@@@@@@@@@   @@@  @@@  @@@@@@@@@@    @@@@@@   @@@@@@@@  @@@  @@@  
@@ -336,6 +341,255 @@ async function readStories(page) {
 }
 
 
+async function execApiGetStories(page, moreData) {
+    const headersX = {
+        'x-trace-id': uuidv4(),
+        'x-span-id': uuidv4(),
+        ...moreData
+    };
+
+    console.log({ headersX });
+
+
+    // Inyectar el código para realizar la petición POST
+    const response = await page.evaluate(async (headersCustom) => {
+        console.log({ headersCustom });
+
+        const url = 'https://hub-api-news.app.afp.com/search';
+        const headers = {
+            'Host': 'hub-api-news.app.afp.com',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0',
+            'Accept': '*/*',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Referer': 'https://news.afp.com/',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + headersCustom.tokenBearer.trim(),
+            'Origin': 'https://news.afp.com',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-site',
+            'Te': 'trailers',
+            "x-span-id": headersCustom['x-span-id'],
+            "x-trace-id": headersCustom['x-trace-id']
+        };
+
+        let payload = {
+            query: `query getStories (
+                  $maxRows: Int,
+                  $cursor: String,
+                  $criteria: String,
+                  $searchLanguage: String!,
+                  $dateRange: DateRangeInput,
+                  $userResearch: Boolean,
+                  $getSelections: Boolean,
+                  $sortOrder:String, $includedSub:Boolean, $language:[String!], $theme:[String!], $location:[String!], $country:[String!], $person:[String!], $textType:[String!], $wordCount:[String!], $provider:[String!]
+                )
+      {
+        search:stories( maxRows: $maxRows,
+                        cursor: $cursor,
+                        criteria: $criteria,
+                        searchLanguage: $searchLanguage,
+                        dateRange: $dateRange,
+                        wantedLanguages:$language,
+                        userResearch: $userResearch,
+                        getSelections: $getSelections,
+                         sortOrder:$sortOrder, includedSub:$includedSub, language:$language, theme:$theme, location:$location, country:$country, person:$person, textType:$textType, wordCount:$wordCount, provider:$provider
+                      )
+        {
+          docs {
+           id
+           type
+           title
+           selections
+           country: countryname
+           city
+           guid
+           contentCreated
+           introduced
+           dateToDisplay
+           source
+           notIncludedInSubscription
+           genre
+           isUrgent
+           isAlert
+           isFlash
+           isPressRelease
+           wordCount
+           slug
+           publicationDayWithUserTimezone: dayOfDateTodisplay (timezoneOffset:-360)
+           cost
+           provider_name
+           contributor
+           lang
+           partner {
+             gcp {
+               providername
+               provider_code
+             }
+           }
+          }
+          nextCursor
+          hasMore
+          numFound
+        }
+      }`,
+            variables: {
+                timezoneOffset: -360,
+                maxRows: 40,
+                searchLanguage: 'es',
+                language: ['es'],
+                getFacet: false,
+                userResearch: false,
+                getSelections: true,
+            },
+            operationName: 'getStories',
+        };
+
+        if (headersCustom.nextCursor !== undefined) {
+            payload.variables.cursor = headersCustom.nextCursor;
+        }
+
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+
+            console.log({ res });
+
+            return await res.json(); // Devolver el JSON de la respuesta
+        } catch (error) {
+            console.error('Error en la petición POST:', error);
+            return { error: error.message };
+        }
+    }, headersX) ?? [];
+
+    console.log('Respuesta de la API:', response);
+    return response;
+}
+
+async function getCookies(context) {
+    try {
+        // Obtener todas las cookies del contexto actual
+        return await context.cookies();
+    } catch (error) {
+        console.log(error);
+    }
+    return [];
+}
+
+const getTokenBearer = async (cookies) => {
+    // Buscar la cookie específica 'ACCESS_TOKEN'
+    const accessTokenCookie = cookies.find(cookie => cookie.name === 'ACCESS_TOKEN');
+
+    if (accessTokenCookie) {
+        console.log('ACCESS_TOKEN:', accessTokenCookie.value);
+        return accessTokenCookie.value;
+    } else {
+        console.log('La cookie ACCESS_TOKEN no fue encontrada.');
+    }
+    return undefined;
+}
+
+function sleepMs(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function sleepSeconds(seconds) {
+    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+}
+
+// Función para pausar en minutos
+function sleepMinutes(minutes) {
+    return new Promise(resolve => setTimeout(resolve, minutes * 60 * 1000));
+}
+
+const getStoriesApiLogical = async (page, tokenBearer) => {
+    let allStories = new Map();
+    let nextCursor = undefined;
+
+    while (true) {
+        try {
+            let response = await execApiGetStories(page, { tokenBearer, nextCursor }) ?? {};
+            let { docs, nextCursor: nextCurs, numFound, hasMore } = response?.data?.search;
+            console.log({ nextCursor, hasMore });
+            let antesDeAgregar = `Cantidad de notas antes de agregar: ${allStories.size}`;
+            docs.forEach(doc => allStories.set(doc.id, doc));
+            console.log(`${antesDeAgregar} || Cantidad de notas despues de agregar: ${allStories.size}`);
+            nextCursor = nextCurs;
+
+            // let conta = 0
+            // for (const [key, value] of allStories) {
+            //     console.log({ value });
+            //     if (conta++ > 2) {
+            //         break
+            //     }
+            // }
+            // break;
+
+            if (nextCurs) {
+                //En teoria esto contiene nextCurs: "BEFORE 2025-01-11T00:50:48.000Z 2025-01-11T00:50:49Z"
+                // Entonces tendria que resultar un array asi [BEFORE, 2025-01-11T00:50:48.000Z, 2025-01-11T00:50:49Z]   
+                const cursorParts = nextCurs.split(' ') ?? []; // Dividir por espacios
+                console.log({ cursorParts });
+
+
+                if (cursorParts.length > 0) {
+                    const convertedDate = timteTools.convertToTimezoneDate(cursorParts[1].trim())
+                    const currentDate = timteTools.getCurrentDate(); // Fecha actual        
+
+                    console.log({ convertedDate, currentDate });
+
+
+                    if (convertedDate < currentDate) {
+                        console.log('La fecha es pasada entonces BREAK!!!.');
+                        break;
+                    } else if (convertedDate === currentDate) {
+                        console.log('La fecha es hoy.');
+                    } else {
+                        console.log('La fecha es futura.');
+                    }
+
+                }
+            }
+            await sleepSeconds(5);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+}
+
+const onWssEvents = async (page) => {
+    // Escuchar eventos WebSocket
+    page.on('websocket', (ws) => {
+        console.log('WebSocket conectado:', ws.url());
+
+        // Escuchar mensajes recibidos desde el servidor
+        ws.on('framereceived', (frame) => {
+            // console.log('Mensaje recibido:', frame.payload); // Mostrar el mensaje recibido
+            try {
+                console.log('Mensaje recibido:', JSON.parse(frame.payload)); // Mostrar el mensaje recibido
+            } catch (error) {
+
+            }
+        });
+
+        // Escuchar mensajes enviados desde la página
+        ws.on('framesent', (frame) => {
+            // console.log('Mensaje enviado:', frame.payload); // Mostrar el mensaje enviado
+        });
+    });
+
+    console.log('Esperando mensajes de WebSocket...');
+}
+
 async function logicalProgression() {
     // Lanza el navegador en modo no headless con opciones para maximizar la ventana
     const browser = await initBrowser();
@@ -349,6 +603,8 @@ async function logicalProgression() {
     // Navega a la URL deseada
     await page.goto('https://news.afp.com');
 
+    onWssEvents(page);
+
     //Cookies de mierda
     // Espera a que el botón exista en el DOM
     try {
@@ -358,10 +614,30 @@ async function logicalProgression() {
 
     await loginAfp(page);
 
-    await readStories(page);
+    // await readStories(page);
+
+    console.log(`Esperando 30 segundos a que carguen las cookies`);
+    await sleepSeconds(30);
+
+    let cookies = await getCookies(context);
+
+
+    if (cookies.length > 0) {
+        console.log(`Cantidada de cookings souls: ${cookies.length}`);
+
+        // Buscar la cookie específica 'ACCESS_TOKEN'
+        let tokenBearer = await getTokenBearer(cookies);
+
+        if (tokenBearer !== undefined) {
+            await getStoriesApiLogical(page, tokenBearer);
+            // await execApiGetStories(page, tokenBearer);
+        }
+
+    }
+
 
     // Cierra el navegador
-    await browser.close();
+    // await browser.close();
 }
 
 (async () => {
