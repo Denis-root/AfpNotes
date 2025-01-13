@@ -575,7 +575,7 @@ const onWssEvents = async (page) => {
         ws.on('framereceived', (frame) => {
             // console.log('Mensaje recibido:', frame.payload); // Mostrar el mensaje recibido
             try {
-                console.log('Mensaje recibido:', JSON.parse(frame.payload)); // Mostrar el mensaje recibido
+                onHandledWsEvent(frame.payload)
             } catch (error) {
 
             }
@@ -588,6 +588,23 @@ const onWssEvents = async (page) => {
     });
 
     console.log('Esperando mensajes de WebSocket...');
+}
+
+const onHandledWsEvent = async (message) => {
+    try {
+        let { type = undefined, document = undefined } = JSON.parse(message.payload);
+
+        if (document) {
+            let { id, type, language } = document;
+            if (type == "news" && language == 'es') {
+                console.log('Mensaje recibido:', document);
+
+            }
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 async function logicalProgression() {
