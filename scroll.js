@@ -424,67 +424,67 @@ async function okCokiesDeMierda(page) {
 
     try {
 
-        await scrollInfinite(page);
+        // await scrollInfinite(page);
 
-        console.log(`Esperando 30 segundos`);        
+        console.log(`Esperando 30 segundos`);
         await sleepSeconds(30);
         let stories = await getHistories(page) ?? [];
 
         console.log('stories', stories?.length);
 
 
-        // if (stories.length > 0) {
+        if (stories.length > 0) {
 
-        //     for (const story of stories) {
+            for (const story of stories) {
 
-        //         console.log('story: ', stories.length);
+                console.log('story: ', stories.length);
 
-        //         await story.click(); // Hacer clic en cada <app-story>
-        //         await page.waitForTimeout(1000); // Espera 1 segundo entre clics para simular comportamiento humano
-
-
-        //         try {
-        //             // Obtener el botón de copiar y hacer clic
-        //             const btnCopy = await page.waitForXPath('/html/body/app-root/app-connected-container/app-connected-space/app-viewer/app-story-page/app-viewer-container/div/div/app-action-bar/div[1]/div[1]/div[2]/lib-afp-icon-button/button');
-        //             await btnCopy.click();
-
-        //             await sleepSeconds(3);
-        //             await scrollAppContainer(
-        //                 page,
-        //                 '/html/body/app-root/app-connected-container/app-connected-space/app-viewer/app-story-page'
-        //             );
-
-        //             // Obtener las URLs de las imágenes
-        //             const urls = await getImages(page);
-
-        //             // Descargar las imágenes y obtener las rutas locales
-        //             const downloadedPaths = urls.length > 0 ? await downloadImages(urls) : []; // Si hay URLs, descarga; si no, paths es vacío.
-
-        //             // Leer el contenido del portapapeles y extraer el título
-        //             const clipboardContent = clipboard.readSync();
-        //             const title = clipboardContent.split('\n')[0].trim();
-        //             console.log('Primera línea limpia:', title);
-
-        //             // Preparar la URL para la petición
-        //             const urlMake = `https://hook.eu2.make.com/slvyhkr678gs1hikgavfqdheetln1qlr`;
-
-        //             const dataSheet = {
-        //                 title,
-        //                 note: clipboardContent,
-        //             };
-
-        //             await sendPostRequest(urlMake, dataSheet, downloadedPaths);
-
-        //         } catch (error) {
-        //             console.log(error);
-        //         }
+                await story.click(); // Hacer clic en cada <app-story>
+                await page.waitForTimeout(1000); // Espera 1 segundo entre clics para simular comportamiento humano
 
 
-        //         await sleepSeconds(5);
-        //     }
-        // } else {
-        //     console.error('No se encontraron elementos <app-story>');
-        // }
+                try {
+                    // Obtener el botón de copiar y hacer clic
+                    const btnCopy = await page.waitForXPath('/html/body/app-root/app-connected-container/app-connected-space/app-viewer/app-story-page/app-viewer-container/div/div/app-action-bar/div[1]/div[1]/div[2]/lib-afp-icon-button/button');
+                    await btnCopy.click();
+
+                    await sleepSeconds(3);
+                    await scrollAppContainer(
+                        page,
+                        '/html/body/app-root/app-connected-container/app-connected-space/app-viewer/app-story-page'
+                    );
+
+                    // Obtener las URLs de las imágenes
+                    const urls = await getImages(page);
+
+                    // Descargar las imágenes y obtener las rutas locales
+                    const downloadedPaths = urls.length > 0 ? await downloadImages(urls) : []; // Si hay URLs, descarga; si no, paths es vacío.
+
+                    // Leer el contenido del portapapeles y extraer el título
+                    const clipboardContent = clipboard.readSync();
+                    const title = clipboardContent.split('\n')[0].trim();
+                    console.log('Primera línea limpia:', title);
+
+                    // Preparar la URL para la petición
+                    const urlMake = `https://hook.eu2.make.com/slvyhkr678gs1hikgavfqdheetln1qlr`;
+
+                    const dataSheet = {
+                        title,
+                        note: clipboardContent,
+                    };
+
+                    await sendPostRequest(urlMake, dataSheet, downloadedPaths);
+
+                } catch (error) {
+                    console.log(error);
+                }
+
+
+                await sleepSeconds(5);
+            }
+        } else {
+            console.error('No se encontraron elementos <app-story>');
+        }
 
     } catch (error) {
         console.log(error);
