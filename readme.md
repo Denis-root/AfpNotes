@@ -15,9 +15,11 @@ Este proyecto utiliza Node.js como lenguaje principal.
     ```
 
 2. **Crear el archivo .env**
+    ```bash
     USER_AFP=<usuario de afp>
     PWD_AFP=<contraseña>
     WEBHOOK_URL=<webhook de make>
+    ```
 
 3. **Iniciar el programa**
     ```nodejs
