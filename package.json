@@ -12,6 +12,7 @@
     "axios": "^1.7.9",
     "clipboardy": "^4.0.0",
     "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
     "form-data": "^4.0.1",
     "node-clipboardy": "^1.0.3",
     "pg": "^8.13.1",

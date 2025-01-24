@@ -1,7 +1,17 @@
+/**
+ * EL OFICIAL COMPLETO
+ */
+
 const { chromium } = require('playwright-chromium');
 const fs = require('fs'); // Para guardar archivos
 const path = require('path'); // Para manejar rutas de archivos
 const axios = require('axios');
+const FormData = require('form-data');
+require('dotenv').config();
+
+const USER_AFP = process.env.USER_AFP;
+const PWD_AFP = process.env.PWD_AFP;
+const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
 
 console.log(`
@@ -24,7 +34,8 @@ async function initBrowser() {
         browser = await chromium.launch({
             headless: false, // No headless (muestra la interfaz gráfica del navegador)
             // args: [], // Maximiza la ventana al iniciar
-            args: ['--start-maximized', '--auto-open-devtools-for-tabs'] // Abre las DevTools automáticamente
+            args: ['--start-maximized',] // Abre las DevTools automáticamente
+            // '--auto-open-devtools-for-tabs'
         });
 
     } catch (error) {
@@ -54,8 +65,8 @@ async function loginAfp(page) {
         // Hace clic en el botón
         await page.click('#onetrust-accept-btn-handler');
 
-        await page.type('[data-id="login_page_login_textfield"]', 'ichavez@elmundo.sv', { delay: 300 });
-        await page.type('[data-id="login_page_password_textfield"]', '93Icha%#', { delay: 300 });
+        await page.type('[data-id="login_page_login_textfield"]', USER_AFP, { delay: 300 });
+        await page.type('[data-id="login_page_password_textfield"]', PWD_AFP, { delay: 300 });
         await page.click('[data-id="login_page_submit_button"]');
     } catch (error) {
 
@@ -238,12 +249,50 @@ async function downloadImages(imageUrls) {
     return downloadedPaths.filter(filePath => filePath !== null);
 }
 
+async function sendPostRequest(url, content, filePaths = []) {
+    try {
+
+        let { articulo = {}, titulo = {}, locacion = '', tags = [], nota = '', images = [] } = content;
+
+        if (!articulo.tag1) articulo.tag1 = '';
+        if (!articulo.tag2) articulo.tag2 = '';
+
+        const form = new FormData();
+        form.append('title', titulo);
+        form.append('note', nota);
+        form.append('articulot1', articulo?.tag1);
+        form.append('articulot2', articulo?.tag2);
+        form.append('location', locacion);
+        form.append('tags', tags.join(','));
+        form.append('images', images.join(','));
+
+        // Adjuntar las imágenes como un array en el campo 'images[]'
+        if (filePaths.length > 0) {
+            filePaths.forEach((filePath) => {
+                const fileStream = fs.createReadStream(filePath);
+                form.append('images[]', fileStream); // Todas las imágenes en el campo 'images[]'
+            });
+        }
+
+        // Enviar la solicitud POST con los headers generados por 'form-data'
+        const response = await axios.post(url, form, {
+            headers: form.getHeaders(),
+        });
+
+        console.log('Respuesta del servidor:', response.data);
+    } catch (error) {
+        console.error('Error al enviar los datos:', error.message);
+        console.log(error);
+    }
+}
+
+
 
 async function readStories(page) {
 
     await page.waitForSelector('.app-feed');
 
-    await scrollInfinite(page);
+    // await scrollInfinite(page);
 
 
     const containerSelector = '.app-feed'; // Selector del contenedor principal
@@ -325,6 +374,12 @@ async function readStories(page) {
             content.images = imagesUrlsAfp;
             console.log({ content });
             console.log(`Contenido del story ${i + 1}:`);
+
+            // Preparar la URL para la petición
+            const urlMake = WEBHOOK_URL;
+
+            await sendPostRequest(urlMake, content);
+
 
             await page.click('[data-id="viewer_close_icon_button"]');
         } catch (error) {

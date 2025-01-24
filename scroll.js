@@ -374,6 +374,8 @@ async function sendPostRequest(url, data, filePaths) {
         console.log('Respuesta del servidor:', response.data);
     } catch (error) {
         console.error('Error al enviar los datos:', error.message);
+        console.log(error);
+
     }
 }
 
